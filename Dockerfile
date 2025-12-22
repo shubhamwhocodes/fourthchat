@@ -10,7 +10,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
 
-# Install dependencies (including devDependencies for build)
+# Install dependencies
 COPY package.json package-lock.json* ./
 RUN npm ci --legacy-peer-deps
 
@@ -20,9 +20,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 RUN npm run build
 
-# Re-install only production dependencies (for the runner)
-# We do this here to avoid a separate stage
-RUN npm ci --legacy-peer-deps --omit=dev
+# Prune dev dependencies to save space 
+RUN npm prune --production
 
 # Stage 2: Runner
 FROM node:20-alpine AS runner
@@ -36,26 +35,25 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy built assets
-COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy production node_modules (which we prepared in builder stage)
-COPY --from=builder /app/node_modules ./node_modules
+# Copy production node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 # Copy database & migration files
-COPY --from=builder /app/drizzle ./drizzle
-COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
-COPY --from=builder /app/lib ./lib
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/drizzle ./drizzle
+COPY --from=builder --chown=nextjs:nodejs /app/drizzle.config.ts ./drizzle.config.ts
+COPY --from=builder --chown=nextjs:nodejs /app/lib ./lib
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 
 # Copy scripts for admin operations & entrypoint
-COPY --from=builder /app/scripts ./scripts
-COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
+COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./tsconfig.json
 
 # Set permissions
-RUN chown -R nextjs:nodejs /app && \
-    chmod +x ./scripts/docker-entrypoint.sh
+RUN chmod +x ./scripts/docker-entrypoint.sh
 
 USER nextjs
 
