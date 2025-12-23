@@ -191,7 +191,7 @@ export const chatbotSettings = pgTable("chatbot_settings", {
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
 
-export const chatbotKnowledgeBases = pgTable("chatbot_knowledge_base", {
+export const chatbotKnowledgeBases = pgTable("fourthchat_knowledge_base", {
     chatbotId: text("chatbot_id")
         .notNull()
         .references(() => chatbots.id, { onDelete: "cascade" }),

@@ -44,10 +44,10 @@ CREATE TABLE "api_usage" (
 	"timestamp" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "chatbot_knowledge_base" (
+CREATE TABLE "fourthchat_knowledge_base" (
 	"chatbot_id" text NOT NULL,
 	"knowledge_base_id" text NOT NULL,
-	CONSTRAINT "chatbot_knowledge_base_chatbot_id_knowledge_base_id_pk" PRIMARY KEY("chatbot_id","knowledge_base_id")
+	CONSTRAINT "fourthchat_knowledge_base_chatbot_id_knowledge_base_id_pk" PRIMARY KEY("chatbot_id","knowledge_base_id")
 );
 --> statement-breakpoint
 CREATE TABLE "chatbot_settings" (
@@ -192,8 +192,8 @@ ALTER TABLE "api_key" ADD CONSTRAINT "api_key_user_id_user_id_fk" FOREIGN KEY ("
 ALTER TABLE "api_usage" ADD CONSTRAINT "api_usage_api_key_id_api_key_id_fk" FOREIGN KEY ("api_key_id") REFERENCES "public"."api_key"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "api_usage" ADD CONSTRAINT "api_usage_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "api_usage" ADD CONSTRAINT "api_usage_chatbot_id_chatbot_id_fk" FOREIGN KEY ("chatbot_id") REFERENCES "public"."chatbot"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "chatbot_knowledge_base" ADD CONSTRAINT "chatbot_knowledge_base_chatbot_id_chatbot_id_fk" FOREIGN KEY ("chatbot_id") REFERENCES "public"."chatbot"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "chatbot_knowledge_base" ADD CONSTRAINT "chatbot_knowledge_base_knowledge_base_id_knowledge_base_id_fk" FOREIGN KEY ("knowledge_base_id") REFERENCES "public"."knowledge_base"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "fourthchat_knowledge_base" ADD CONSTRAINT "fourthchat_knowledge_base_chatbot_id_chatbot_id_fk" FOREIGN KEY ("chatbot_id") REFERENCES "public"."chatbot"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "fourthchat_knowledge_base" ADD CONSTRAINT "fourthchat_knowledge_base_knowledge_base_id_knowledge_base_id_fk" FOREIGN KEY ("knowledge_base_id") REFERENCES "public"."knowledge_base"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "chatbot_settings" ADD CONSTRAINT "chatbot_settings_chatbot_id_chatbot_id_fk" FOREIGN KEY ("chatbot_id") REFERENCES "public"."chatbot"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "chatbot" ADD CONSTRAINT "chatbot_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "connection" ADD CONSTRAINT "connection_chatbot_id_chatbot_id_fk" FOREIGN KEY ("chatbot_id") REFERENCES "public"."chatbot"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

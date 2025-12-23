@@ -10,7 +10,7 @@ export const qdrant = new QdrantClient({
     checkCompatibility: false,
 })
 
-export const CHATBOT_COLLECTION = "chatbot_knowledge"
+export const CHATBOT_COLLECTION = "fourthchat_knowledge"
 
 export async function ensureCollection(dimension: number) {
     const collections = await qdrant.getCollections()

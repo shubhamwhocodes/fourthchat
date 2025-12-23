@@ -343,8 +343,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.chatbot_knowledge_base": {
-      "name": "chatbot_knowledge_base",
+    "public.fourthchat_knowledge_base": {
+      "name": "fourthchat_knowledge_base",
       "schema": "",
       "columns": {
         "chatbot_id": {
@@ -362,9 +362,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "chatbot_knowledge_base_chatbot_id_chatbot_id_fk": {
-          "name": "chatbot_knowledge_base_chatbot_id_chatbot_id_fk",
-          "tableFrom": "chatbot_knowledge_base",
+        "fourthchat_knowledge_base_chatbot_id_chatbot_id_fk": {
+          "name": "fourthchat_knowledge_base_chatbot_id_chatbot_id_fk",
+          "tableFrom": "fourthchat_knowledge_base",
           "tableTo": "chatbot",
           "columnsFrom": [
             "chatbot_id"
@@ -375,9 +375,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "chatbot_knowledge_base_knowledge_base_id_knowledge_base_id_fk": {
-          "name": "chatbot_knowledge_base_knowledge_base_id_knowledge_base_id_fk",
-          "tableFrom": "chatbot_knowledge_base",
+        "fourthchat_knowledge_base_knowledge_base_id_knowledge_base_id_fk": {
+          "name": "fourthchat_knowledge_base_knowledge_base_id_knowledge_base_id_fk",
+          "tableFrom": "fourthchat_knowledge_base",
           "tableTo": "knowledge_base",
           "columnsFrom": [
             "knowledge_base_id"
@@ -390,8 +390,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "chatbot_knowledge_base_chatbot_id_knowledge_base_id_pk": {
-          "name": "chatbot_knowledge_base_chatbot_id_knowledge_base_id_pk",
+        "fourthchat_knowledge_base_chatbot_id_knowledge_base_id_pk": {
+          "name": "fourthchat_knowledge_base_chatbot_id_knowledge_base_id_pk",
           "columns": [
             "chatbot_id",
             "knowledge_base_id"
