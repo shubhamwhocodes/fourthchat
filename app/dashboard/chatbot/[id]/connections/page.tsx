@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
@@ -12,6 +13,7 @@ import { Plus, Trash2, TestTube, Copy, ExternalLink, ArrowLeft, Webhook, Message
 import { toast } from "sonner"
 import { use } from "react"
 import { integrations, type Integration } from "@/lib/integrations"
+import { WhatsAppConnector } from "@/components/whatsapp-connector"
 
 interface Connection {
     id: string
@@ -44,12 +46,40 @@ export default function ConnectionsPage({ params }: ConnectionsPageProps) {
     const [loading, setLoading] = useState(true)
     const [creating, setCreating] = useState(false)
     const [testing, setTesting] = useState<string | null>(null)
+    const [deleteConfirmationId, setDeleteConfirmationId] = useState<string | null>(null)
 
     const [showDialog, setShowDialog] = useState(false)
     const [dialogStep, setDialogStep] = useState<"select" | "configure">("select")
     const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null)
     const [name, setName] = useState("")
     const [configValues, setConfigValues] = useState<Record<string, string>>({})
+
+    const handleDeleteConnection = async (connectionId: string) => {
+        setDeleteConfirmationId(connectionId)
+    }
+
+    const confirmDeleteConnection = async () => {
+        if (!deleteConfirmationId) return
+
+        const connectionId = deleteConfirmationId
+        setDeleteConfirmationId(null)
+
+        try {
+            const response = await fetch(`/api/connections?id=${connectionId}`, {
+                method: "DELETE"
+            })
+
+            if (response.ok) {
+                toast.success("Connection deleted")
+                setConnections(connections.filter(c => c.id !== connectionId))
+            } else {
+                toast.error("Failed to delete connection")
+            }
+        } catch (error) {
+            console.error("Error deleting connection:", error)
+            toast.error("Error deleting connection")
+        }
+    }
 
     const fetchConnections = useCallback(async () => {
         try {
@@ -145,28 +175,6 @@ export default function ConnectionsPage({ params }: ConnectionsPageProps) {
         setSelectedIntegration(null)
         setName("")
         setConfigValues({})
-    }
-
-    const handleDeleteConnection = async (connectionId: string) => {
-        if (!confirm("Are you sure you want to delete this connection?")) {
-            return
-        }
-
-        try {
-            const response = await fetch(`/api/connections?id=${connectionId}`, {
-                method: "DELETE"
-            })
-
-            if (response.ok) {
-                toast.success("Connection deleted")
-                setConnections(connections.filter(c => c.id !== connectionId))
-            } else {
-                toast.error("Failed to delete connection")
-            }
-        } catch (error) {
-            console.error("Error deleting connection:", error)
-            toast.error("Error deleting connection")
-        }
     }
 
     const handleTestConnection = async (connectionId: string) => {
@@ -409,147 +417,175 @@ export default function ConnectionsPage({ params }: ConnectionsPageProps) {
                         )}
                     </DialogContent>
                 </Dialog>
+
+                {/* WhatsApp Scan Dialog */}
+
             </div>
 
-            {loading ? (
-                <div className="flex items-center justify-center p-12 border rounded-lg bg-card/50">
-                    <p className="text-muted-foreground">Loading connections...</p>
-                </div>
-            ) : connections.length === 0 ? (
-                <Card className="border-dashed">
-                    <CardContent className="py-12 text-center">
-                        <div className="flex flex-col items-center justify-center gap-2">
-                            <div className="p-4 rounded-full bg-muted/50">
-                                <Plus className="h-8 w-8 text-muted-foreground" />
+            {
+                loading ? (
+                    <div className="flex items-center justify-center p-12 border rounded-lg bg-card/50">
+                        <p className="text-muted-foreground">Loading connections...</p>
+                    </div>
+                ) : connections.length === 0 ? (
+                    <Card className="border-dashed">
+                        <CardContent className="py-12 text-center">
+                            <div className="flex flex-col items-center justify-center gap-2">
+                                <div className="p-4 rounded-full bg-muted/50">
+                                    <Plus className="h-8 w-8 text-muted-foreground" />
+                                </div>
+                                <h3 className="font-semibold text-lg mt-2">No connections yet</h3>
+                                <p className="text-muted-foreground mb-4 max-w-sm mx-auto">
+                                    Connect your chatbot to WhatsApp, Slack, webhooks, and more.
+                                </p>
+                                <Button onClick={() => setShowDialog(true)}>
+                                    Create First Connection
+                                </Button>
                             </div>
-                            <h3 className="font-semibold text-lg mt-2">No connections yet</h3>
-                            <p className="text-muted-foreground mb-4 max-w-sm mx-auto">
-                                Connect your chatbot to WhatsApp, Slack, webhooks, and more.
-                            </p>
-                            <Button onClick={() => setShowDialog(true)}>
-                                Create First Connection
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="grid gap-4">
-                    {connections.map((connection) => {
-                        const integration = getIntegrationForType(connection.type)
-                        const Icon = integration ? getIntegrationIcon(integration.icon) : Webhook
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <div className="grid gap-4">
+                        {connections.map((connection) => {
+                            const integration = getIntegrationForType(connection.type)
+                            const Icon = integration ? getIntegrationIcon(integration.icon) : Webhook
 
-                        return (
-                            <Card key={connection.id} className="overflow-hidden bg-card/50 hover:bg-card transition-colors">
-                                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                                    <div className="flex items-start gap-3">
-                                        <div className={`p-2 rounded-lg ${connection.type.includes("whatsapp")
-                                            ? "bg-green-500/10 text-green-600"
-                                            : connection.type === "slack"
-                                                ? "bg-purple-500/10 text-purple-600"
-                                                : connection.type === "discord"
-                                                    ? "bg-indigo-500/10 text-indigo-600"
-                                                    : "bg-primary/10 text-primary"
-                                            }`}>
-                                            <Icon className="h-5 w-5" />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <CardTitle className="text-base font-semibold">{connection.name}</CardTitle>
-                                                {connection.isActive ? (
-                                                    <Badge variant="default" className="bg-green-500/15 text-green-600 hover:bg-green-500/25 border-green-500/20">Active</Badge>
-                                                ) : (
-                                                    <Badge variant="secondary">Inactive</Badge>
-                                                )}
+                            return (
+                                <Card key={connection.id} className="overflow-hidden bg-card/50 hover:bg-card transition-colors">
+                                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                                        <div className="flex items-start gap-3">
+                                            <div className={`p-2 rounded-lg ${connection.type.includes("whatsapp")
+                                                ? "bg-green-500/10 text-green-600"
+                                                : connection.type === "slack"
+                                                    ? "bg-purple-500/10 text-purple-600"
+                                                    : connection.type === "discord"
+                                                        ? "bg-indigo-500/10 text-indigo-600"
+                                                        : "bg-primary/10 text-primary"
+                                                }`}>
+                                                <Icon className="h-5 w-5" />
                                             </div>
-                                            <CardDescription className="text-xs">
-                                                {integration?.name || connection.type} • {connection.chatbotName} • Created {new Date(connection.createdAt).toLocaleDateString()}
-                                            </CardDescription>
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <CardTitle className="text-base font-semibold">{connection.name}</CardTitle>
+                                                    {connection.isActive ? (
+                                                        <Badge variant="default" className="bg-green-500/15 text-green-600 hover:bg-green-500/25 border-green-500/20">Active</Badge>
+                                                    ) : (
+                                                        <Badge variant="secondary">Inactive</Badge>
+                                                    )}
+                                                </div>
+                                                <CardDescription className="text-xs">
+                                                    {integration?.name || connection.type} • {connection.chatbotName} • Created {new Date(connection.createdAt).toLocaleDateString()}
+                                                </CardDescription>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="flex items-center gap-1">
-                                        {connection.type === "webhook" && (
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="h-8 text-xs"
-                                                onClick={() => handleTestConnection(connection.id)}
-                                                disabled={testing === connection.id}
-                                            >
-                                                <TestTube className="h-3.5 w-3.5 mr-2" />
-                                                {testing === connection.id ? "Testing..." : "Test"}
-                                            </Button>
-                                        )}
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                            onClick={() => handleDeleteConnection(connection.id)}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </CardHeader>
-
-                                <CardContent>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm mt-2">
-                                        <div className="space-y-1">
-                                            <p className="text-xs font-medium text-muted-foreground">Total Messages</p>
-                                            <p className="font-mono">{connection.totalMessages.toLocaleString()}</p>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="text-xs font-medium text-muted-foreground">Last Used</p>
-                                            <p className="font-mono text-xs">
-                                                {connection.lastUsedAt
-                                                    ? new Date(connection.lastUsedAt).toLocaleDateString()
-                                                    : "-"}
-                                            </p>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="text-xs font-medium text-muted-foreground">Connection ID</p>
-                                            <div className="flex items-center gap-2 group">
-                                                <code className="text-xs bg-muted px-1.5 py-0.5 rounded border truncate max-w-[120px]">
-                                                    {connection.id}
-                                                </code>
+                                        <div className="flex items-center gap-1">
+                                            {connection.type === "webhook" && (
                                                 <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    onClick={() => copyToClipboard(connection.id, "Connection ID")}
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-8 text-xs"
+                                                    onClick={() => handleTestConnection(connection.id)}
+                                                    disabled={testing === connection.id}
                                                 >
-                                                    <Copy className="h-3 w-3" />
+                                                    <TestTube className="h-3.5 w-3.5 mr-2" />
+                                                    {testing === connection.id ? "Testing..." : "Test"}
                                                 </Button>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="text-xs font-medium text-muted-foreground">Type</p>
-                                            <p className="text-xs">{integration?.name || connection.type}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-6 pt-4 border-t flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                            <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
-                                            <span>Ready to receive events</span>
-                                        </div>
-                                        {integration?.docsPath && (
+                                            )}
                                             <Button
-                                                variant="link"
-                                                size="sm"
-                                                className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-                                                onClick={() => window.open(integration.docsPath, "_blank")}
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                onClick={() => handleDeleteConnection(connection.id)}
                                             >
-                                                Documentation
-                                                <ExternalLink className="h-3 w-3 ml-1" />
+                                                <Trash2 className="h-4 w-4" />
                                             </Button>
+                                        </div>
+                                    </CardHeader>
+
+                                    <CardContent>
+                                        {connection.type === "whatsapp-native" ? (
+                                            <div className="mt-2">
+                                                <WhatsAppConnector connectionId={connection.id} />
+                                            </div>
+                                        ) : (
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm mt-2">
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-medium text-muted-foreground">Total Messages</p>
+                                                    <p className="font-mono">{connection.totalMessages.toLocaleString()}</p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-medium text-muted-foreground">Last Used</p>
+                                                    <p className="font-mono text-xs">
+                                                        {connection.lastUsedAt
+                                                            ? new Date(connection.lastUsedAt).toLocaleDateString()
+                                                            : "-"}
+                                                    </p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-medium text-muted-foreground">Connection ID</p>
+                                                    <div className="flex items-center gap-2 group">
+                                                        <code className="text-xs bg-muted px-1.5 py-0.5 rounded border truncate max-w-[120px]">
+                                                            {connection.id}
+                                                        </code>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            onClick={() => copyToClipboard(connection.id, "Connection ID")}
+                                                        >
+                                                            <Copy className="h-3 w-3" />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-medium text-muted-foreground">Type</p>
+                                                    <p className="text-xs">{integration?.name || connection.type}</p>
+                                                </div>
+                                            </div>
                                         )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )
-                    })}
-                </div>
-            )}
-        </div>
+
+                                        <div className="mt-6 pt-4 border-t flex items-center justify-between">
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
+                                                <span>Ready to receive events</span>
+                                            </div>
+                                            {integration?.docsPath && (
+                                                <Button
+                                                    variant="link"
+                                                    size="sm"
+                                                    className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+                                                    onClick={() => window.open(integration.docsPath, "_blank")}
+                                                >
+                                                    Documentation
+                                                    <ExternalLink className="h-3 w-3 ml-1" />
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )
+                        })}
+                    </div>
+                )
+            }
+            <AlertDialog open={!!deleteConfirmationId} onOpenChange={(open) => !open && setDeleteConfirmationId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your connection
+                            and remove all associated data.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDeleteConnection} className={buttonVariants({ variant: "destructive" })}>
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div >
     )
 }

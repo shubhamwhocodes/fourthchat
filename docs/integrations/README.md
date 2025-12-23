@@ -6,9 +6,9 @@ Connect your AI chatbot to various platforms and services.
 
 | Integration | Status | Description |
 |-------------|--------|-------------|
-| [Custom Webhook](./webhook.md) | ✅ Available | Connect to any HTTP-based system |
+| [WhatsApp](./whatsapp-native.md) | ✅ Available | Connect directly via QR Code (Native) |
 | [WhatsApp Business](./whatsapp-business.md) | ✅ Available | Official Meta WhatsApp Cloud API |
-| [WhatsApp (Evolution API)](./whatsapp-evolution.md) | ✅ Available | Self-hosted WhatsApp via Evolution API |
+| [Custom Webhook](./webhook.md) | ✅ Available | Connect to any HTTP-based system |
 | Slack | 🔜 Coming Soon | Connect to Slack workspaces |
 | Discord | 🔜 Coming Soon | Add chatbot to Discord servers |
 | Telegram | 🔜 Coming Soon | Connect to Telegram |
@@ -41,7 +41,6 @@ Your FourthChat instance provides these webhook endpoints:
 |-------------|-------------|
 | Custom Webhook | `https://your-domain.com/api/webhooks/incoming` |
 | WhatsApp Business | `https://your-domain.com/api/webhooks/whatsapp` |
-| Evolution API | `https://your-domain.com/api/webhooks/evolution` |
 
 ## Need Help?
 

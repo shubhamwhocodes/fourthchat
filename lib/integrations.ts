@@ -1,7 +1,7 @@
 export type IntegrationType =
     | "webhook"
     | "whatsapp-business"
-    | "whatsapp-evolution"
+    | "whatsapp-native"
     | "slack"
     | "discord"
     | "telegram"
@@ -112,41 +112,14 @@ export const integrations: Integration[] = [
         externalDocsUrl: "https://developers.facebook.com/docs/whatsapp/cloud-api"
     },
     {
-        type: "whatsapp-evolution",
-        name: "WhatsApp (Evolution API)",
-        description: "Self-hosted WhatsApp via Evolution API. No Meta verification needed.",
+        type: "whatsapp-native",
+        name: "WhatsApp",
+        description: "Connect WhatsApp directly by scanning a QR code. No external API required.",
         icon: "MessageCircle",
         category: "messaging",
         status: "available",
-        configFields: [
-            {
-                key: "evolutionApiUrl",
-                label: "Evolution API URL",
-                type: "url",
-                placeholder: "https://evolution.yourserver.com",
-                required: true,
-                helpText: "Your Evolution API server URL"
-            },
-            {
-                key: "apiKey",
-                label: "API Key",
-                type: "password",
-                placeholder: "Your Evolution API key",
-                required: true,
-                helpText: "API key for authentication"
-            },
-            {
-                key: "instanceName",
-                label: "Instance Name",
-                type: "text",
-                placeholder: "my-whatsapp-instance",
-                required: true,
-                helpText: "Name of your WhatsApp instance"
-            }
-        ],
-        webhookEndpoint: "/api/webhooks/evolution",
-        docsPath: "/docs/integrations/whatsapp-evolution",
-        externalDocsUrl: "https://doc.evolution-api.com"
+        configFields: [], // No fields needed, managed by UI (QR code scanning)
+        docsPath: "/docs/integrations/whatsapp-native",
     },
     {
         type: "slack",

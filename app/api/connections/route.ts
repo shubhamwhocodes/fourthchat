@@ -5,6 +5,7 @@ import { connections, chatbots } from "@/lib/schema"
 import { eq, and, desc } from "drizzle-orm"
 import { randomBytes } from "crypto"
 import type { ConnectionConfig } from "@/lib/types"
+import { deleteDrizzleAuthState } from "@/lib/whatsapp/auth"
 
 export async function GET(req: Request) {
     const session = await auth()
@@ -154,22 +155,25 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: "Connection ID is required" }, { status: 400 })
         }
 
-        // Delete connection (only if belongs to user)
-        const result = await db.delete(connections)
-            .where(
-                and(
-                    eq(connections.id, id),
-                    eq(connections.userId, session.user.id)
-                )
+        const connection = await db.query.connections.findFirst({
+            where: and(
+                eq(connections.id, id),
+                eq(connections.userId, session.user.id)
             )
-            .returning()
+        })
 
-        if (result.length === 0) {
+        if (!connection) {
             return NextResponse.json(
                 { error: "Connection not found or access denied" },
                 { status: 404 }
             )
         }
+
+        if (connection.type === 'whatsapp') {
+            await deleteDrizzleAuthState(id)
+        }
+        await db.delete(connections)
+            .where(eq(connections.id, id))
 
         return NextResponse.json({ success: true })
 
