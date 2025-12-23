@@ -111,6 +111,11 @@ export async function POST(req: Request) {
     } catch (error) {
         console.error("Error creating model:", error)
         const errorMessage = error instanceof Error ? error.message : "Failed to initialize AI model"
-        return new Response(errorMessage, { status: 400 })
+        if (errorMessage.includes("No API key configured")) {
+            return new Response(errorMessage, { status: 422 })
+        } else if (errorMessage.includes("not found in supported providers")) {
+            return new Response(errorMessage, { status: 400 })
+        }
+        return new Response(errorMessage, { status: 500 })
     }
 }

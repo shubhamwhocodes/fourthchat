@@ -50,7 +50,7 @@ export function KnowledgeBaseList({ kbs }: { kbs: KnowledgeBase[] }) {
                     Knowledge Bases
                 </h2>
                 <Button onClick={() => setOpen(true)}>
-                    <Plus className="md:mr-2 h-4 w-4" />
+                    <Plus className="h-4 w-4" />
                     <span className="hidden md:inline">New Knowledge Base</span>
                 </Button>
                 <Dialog open={open} onOpenChange={setOpen}>

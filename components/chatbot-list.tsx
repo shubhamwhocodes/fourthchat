@@ -41,7 +41,7 @@ export function ChatbotList({ bots }: { bots: Chatbot[] }) {
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                         <Button>
-                            <Plus className="md:mr-2 h-4 w-4" />
+                            <Plus className="h-4 w-4" />
                             <span className="hidden sm:inline">New Chatbot</span>
                         </Button>
                     </DialogTrigger>

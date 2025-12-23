@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Send, Bot, User } from "lucide-react"
 import { FormEvent, useState } from "react"
 import { Message } from "@/types"
+import Link from "next/link"
 
 interface ChatPlaygroundProps {
     chatbotId: string
@@ -15,7 +16,7 @@ export function ChatPlayground({ chatbotId }: ChatPlaygroundProps) {
     const [input, setInput] = useState("")
     const [messages, setMessages] = useState<Message[]>([])
     const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+    const [error, setError] = useState<string | React.ReactNode | null>(null)
 
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault()
@@ -43,6 +44,18 @@ export function ChatPlayground({ chatbotId }: ChatPlaygroundProps) {
             })
 
             if (!response.ok) {
+                if (response.status === 422) {
+                    setError(
+                        <span>
+                            No API key configured. Please add your API key in{" "}
+                            <Link href="/dashboard/settings" className="underline font-semibold hover:text-destructive-foreground">
+                                Settings
+                            </Link>
+                        </span>
+                    )
+                    setIsLoading(false)
+                    return
+                }
                 const errorText = await response.text()
                 throw new Error(errorText || `Request failed with status ${response.status}`)
             }
