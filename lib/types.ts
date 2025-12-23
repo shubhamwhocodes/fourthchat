@@ -5,9 +5,6 @@ export interface ConnectionConfig {
     verifyToken?: string
     phoneNumberId?: string
     accessToken?: string
-    evolutionApiUrl?: string
-    apiKey?: string
-    instanceName?: string
 }
 
 export interface WebhookPayload {
