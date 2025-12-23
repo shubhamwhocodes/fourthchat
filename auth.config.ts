@@ -11,12 +11,20 @@ export const authConfig = {
 
             if (isOnDashboard) {
                 if (isLoggedIn) return true
-                return false
+                const callbackUrl = nextUrl.pathname + nextUrl.search;
+                const loginUrl = new URL('/login', nextUrl.origin);
+                loginUrl.searchParams.set('callbackUrl', callbackUrl);
+                return Response.redirect(new URL(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`, nextUrl.origin));
             } else if (isLoggedIn && (nextUrl.pathname === '/login' || nextUrl.pathname === '/register')) {
                 return Response.redirect(new URL('/dashboard', nextUrl))
             }
             return true
         },
+        async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+            if (url.startsWith("/")) return `${baseUrl}${url}`
+            else if (new URL(url).origin === baseUrl) return url
+            return baseUrl
+        }
     },
     providers: [],
 } satisfies NextAuthConfig
