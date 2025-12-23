@@ -61,6 +61,7 @@ POSTGRES_URL="postgresql://postgres:postgres@localhost:5432/fourthchat"
 
 # Vector Database (Qdrant)
 QDRANT_URL="http://localhost:6333"
+# QDRANT_API_KEY="your-api-key-here" (Optional: only if using authentication)
 
 # Authentication (generate with: openssl rand -base64 32)
 AUTH_SECRET="your-super-secret-key-at-least-32-chars"

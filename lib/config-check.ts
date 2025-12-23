@@ -57,7 +57,11 @@ export async function checkServices(): Promise<ServiceStatus> {
     try {
         const qdrantUrl = process.env.QDRANT_URL;
         if (qdrantUrl) {
-            const response = await fetch(`${qdrantUrl}/healthz`);
+            const headers: HeadersInit = {};
+            if (process.env.QDRANT_API_KEY) {
+                headers["api-key"] = process.env.QDRANT_API_KEY;
+            }
+            const response = await fetch(`${qdrantUrl}/healthz`, { headers });
             status.qdrant = response.ok;
         }
     } catch (error) {
