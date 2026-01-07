@@ -4,7 +4,6 @@ import {
     text,
     boolean,
     integer,
-    json,
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { users } from "./auth"
@@ -25,9 +24,6 @@ export const apiKeys = pgTable("api_key", {
     isActive: boolean("is_active").default(true).notNull(),
 
     rateLimit: integer("rate_limit").default(100).notNull(),
-    allowedChatbotIds: json("allowed_chatbot_ids").$type<string[]>(),
-    allowedDomains: json("allowed_domains").$type<string[]>(),
-    allowedIPs: json("allowed_ips").$type<string[]>(),
 
     totalRequests: integer("total_requests").default(0).notNull(),
     lastUsedAt: timestamp("last_used_at"),

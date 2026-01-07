@@ -11,6 +11,16 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Key, Copy, Trash2, Plus, AlertCircle, Check } from "lucide-react"
@@ -33,6 +43,7 @@ export default function ApiKeysPage() {
     const [newKeyName, setNewKeyName] = useState("")
     const [createdKey, setCreatedKey] = useState<string | null>(null)
     const [copiedId, setCopiedId] = useState<string | null>(null)
+    const [deleteId, setDeleteId] = useState<string | null>(null)
 
     useEffect(() => {
         fetchKeys()
@@ -82,10 +93,6 @@ export default function ApiKeysPage() {
     }
 
     const handleRevokeKey = async (keyId: string) => {
-        if (!confirm("Are you sure you want to revoke this API key? This cannot be undone.")) {
-            return
-        }
-
         try {
             const res = await fetch(`/api/keys/${keyId}`, {
                 method: "DELETE"
@@ -256,17 +263,6 @@ export default function ApiKeysPage() {
                                         <code className="text-sm bg-muted px-3 py-1 rounded font-mono">
                                             {key.keyPrefix}••••••••••••••••
                                         </code>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => copyToClipboard(key.keyPrefix, key.id)}
-                                        >
-                                            {copiedId === key.id ? (
-                                                <Check className="h-3 w-3" />
-                                            ) : (
-                                                <Copy className="h-3 w-3" />
-                                            )}
-                                        </Button>
                                     </div>
 
                                     <div className="grid grid-cols-3 gap-4 text-sm">
@@ -288,7 +284,7 @@ export default function ApiKeysPage() {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    onClick={() => handleRevokeKey(key.id)}
+                                    onClick={() => setDeleteId(key.id)}
                                     className="text-destructive hover:text-destructive"
                                 >
                                     <Trash2 className="h-4 w-4" />
@@ -298,6 +294,29 @@ export default function ApiKeysPage() {
                     ))}
                 </div>
             )}
+
+            <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Revoke API Key?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to revoke this API key? Any applications using it will immediately lose access. This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                if (deleteId) handleRevokeKey(deleteId)
+                                setDeleteId(null)
+                            }}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            Revoke Key
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

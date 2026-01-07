@@ -77,10 +77,10 @@ export default function EmbedPage({ params }: EmbedPageProps) {
                                 placeholder="cb_live_xxxxxxxxxxxx"
                                 className="font-mono text-sm"
                             />
-                            {(!apiKey || apiKey.includes("••••")) && (
+                            {!apiKey && (
                                 <p className="text-sm text-muted-foreground">
                                     <Link href="/dashboard/api-keys" className="text-primary underline">
-                                        Create an API key
+                                        Get API key
                                     </Link>{" "}and paste the full key here.
                                 </p>
                             )}
