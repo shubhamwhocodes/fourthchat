@@ -22,11 +22,11 @@ This project and everyone participating in it is governed by our commitment to c
 
 ## I Have a Question
 
-Before you ask a question, please search for existing [Issues](https://github.com/shubhamwhocodes/fourthchat/issues) that might help you. If you find a suitable issue but still need clarification, you can add your question there.
+Before you ask a question, please search for existing [Issues](https://github.com/mentterlabs/fourthchat/issues) that might help you. If you find a suitable issue but still need clarification, you can add your question there.
 
 If you still need to ask a question:
 
-1. Open an [Issue](https://github.com/shubhamwhocodes/fourthchat/issues/new)
+1. Open an [Issue](https://github.com/mentterlabs/fourthchat/issues/new)
 2. Use the "Question" label
 3. Provide as much context as you can about your situation
 
@@ -48,7 +48,7 @@ If you still need to ask a question:
 
 We use GitHub issues to track bugs. If you run into a bug:
 
-1. Open an [Issue](https://github.com/shubhamwhocodes/fourthchat/issues/new)
+1. Open an [Issue](https://github.com/mentterlabs/fourthchat/issues/new)
 2. Use the "Bug" label
 3. Describe the expected vs actual behavior
 4. Provide steps to reproduce
@@ -64,7 +64,7 @@ Enhancement suggestions are welcome! Before creating one:
 
 To suggest an enhancement:
 
-1. Open an [Issue](https://github.com/shubhamwhocodes/fourthchat/issues/new)
+1. Open an [Issue](https://github.com/mentterlabs/fourthchat/issues/new)
 2. Use the "Enhancement" label
 3. Explain your use case and why this enhancement would be useful
 4. Be as detailed as possible

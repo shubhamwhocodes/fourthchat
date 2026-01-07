@@ -73,7 +73,7 @@ AUTH_SECRET="your-super-secret-key-at-least-32-chars"
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/shubhamwhocodes/fourthchat.git
+    git clone https://github.com/mentterlabs/fourthchat.git
     cd fourthchat
     ```
 

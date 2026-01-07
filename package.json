@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shubhamwhocodes/fourthchat.git"
+    "url": "https://github.com/mentterlabs/fourthchat.git"
   },
   "scripts": {
     "dev": "next dev",
